@@ -140,6 +140,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
   Timer? timer;
   @override
   void initState() {
+    // print("selleeerer name $RES")
     // SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual,
     //     overlays: [SystemUiOverlay.top, SystemUiOverlay.bottom]);
     // SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
@@ -164,7 +165,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
       return getProducts();
     });
     //  getOrder();
-
     Future.delayed(Duration(milliseconds: 300), () {
       return getSalesLists();
     });
@@ -217,19 +217,18 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     var headers = {
       'Cookie': 'ci_session=4445f54bb47cec990c3810bf9f753e241a2a3f7d'
     };
-    var request =
-        http.MultipartRequest('POST', Uri.parse('${baseUrl}get_products'));
-    request.fields.addAll({'seller_id': '${CUR_USERID}'});
+    var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}get_products'));
+    request.fields.addAll({'seller_id': '$CUR_USERID'});
+    print("kjaksjkjkjskjaksk ${request.fields}");
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
       var finalResult = await response.stream.bytesToString();
       final jsonResponse = json.decode(finalResult);
-
       setState(() {
         finalProductCount = jsonResponse['total'];
       });
-      print("checking length of product ${finalProductCount}");
+      print("checking length of product $finalProductCount");
     } else {
       print(response.reasonPhrase);
     }
@@ -877,7 +876,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             var storeLogo = data[StoreLogo];
             onOf = data["online"] == "1" ? true : false;
 
-            print("bank name : $bankName");
+            print("bank name : $bankName $CUR_USERNAME" );
             saveUserDetail(
               id.toString(),
               username.toString(),
@@ -946,7 +945,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     var request =
         http.MultipartRequest('POST', Uri.parse('${baseUrl}update_online'));
     request.fields.addAll(
-        {'id': '${CUR_USERID}}', 'open_close_status': onOf ? '1' : '0'});
+        {'id': '$CUR_USERID}', 'open_close_status': onOf ? '1' : '0'});
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -984,7 +983,8 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 onOf = value;
                 shopStatus();
               });
-            })
+              }
+             ),
       ],
     );
   }
@@ -1072,22 +1072,22 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                      RESTRAUNT_NAME!,// CUR_USERNAME!,
+                      CUR_USERNAME!,// CUR_USERNAME!,
                       style: Theme.of(context).textTheme
                         .subtitle1!
                         .copyWith(color: white, fontWeight: FontWeight.bold),
                   ),
-                  Text(
-                    getTranslated(context, "WALLET_BAL")! +
-                        ": " +
-                        CUR_CURRENCY +
-                        "" +
-                        CUR_BALANCE,
-                    style: Theme.of(context)
-                        .textTheme
-                        .caption!
-                        .copyWith(color: white),
-                  ),
+                  // Text(
+                  //   getTranslated(context, "WALLET_BAL")! +
+                  //       ": " +
+                  //       CUR_CURRENCY +
+                  //       "" +
+                  //       CUR_BALANCE,
+                  //   style: Theme.of(context)
+                  //       .textTheme
+                  //       .caption!
+                  //       .copyWith(color: white),
+                  // ),
                   Padding(
                     padding: const EdgeInsets.only(
                       top: 7,
@@ -1586,9 +1586,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         thirdHeader(),
                         fourthHeader(),
                         // fifthHeader(),
-
                         SizedBox(height: 10),
-
                         Text(
                           "Reports",
                           style: TextStyle(
@@ -1604,8 +1602,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                     ),
                   ),
                 ),
-              )
-        : noInternet(context);
+              ): noInternet(context);
   }
 
 //==============================================================================

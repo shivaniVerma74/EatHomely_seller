@@ -147,7 +147,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
     };
     var request = http.MultipartRequest(
         'POST', Uri.parse('${baseUrl}accept_reject_status'));
-    request.fields.addAll({'status': '${status}', 'order_id': '${orderId}'});
+    request.fields.addAll({'status': '$status', 'order_id': '$orderId'});
     print("checking params here ${request.fields}");
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
@@ -162,10 +162,8 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
           activeStatus = null;
           scrollLoadmore = true;
           scrollOffset = 0;
-
           getOrder();
         });
-
         // Navigator.pop(context);
       } else {
         setState(() {
@@ -384,6 +382,12 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
     );
   }
 
+  String? selfPickup;
+  var selfitem = [
+    'Yes',
+    'No',
+  ];
+
   _showContent() {
     print("checking order length ${orderList.length}");
     return
@@ -404,6 +408,35 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
               _detailHeader(),
               _detailHeader2(),
               _filterRow(),
+              // Container(
+              //   width: MediaQuery.of(context).size.width/2.5,
+              //   child: Card(
+              //     color: Colors.white,
+              //     elevation: 2,
+              //     child: DropdownButtonFormField<String>(
+              //       value: selfPickup,
+              //       // hint: Icon(Icons.arrow_drop_down_outlined),
+              //       onChanged: (String? newValue) {
+              //         setState(() {
+              //           selfPickup = newValue!;
+              //           print("jkjkdjjjkksk $selfPickup ");
+              //         });
+              //       },
+              //       items: selfitem.map((String selfitem) {
+              //         return DropdownMenuItem(
+              //           value: selfitem,
+              //           child: Text(selfitem.toString()),
+              //         );
+              //       }).toList(),
+              //       decoration: const InputDecoration(
+              //         border: InputBorder.none,
+              //         hintText: 'SelfPickup',
+              //         filled: true,
+              //       ),
+              //     ),
+              //   ),
+              // ),
+              // SizedBox(height: 5,),
               orderList.length == 0
                   ? Center(
                       child: Padding(

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';
+import 'package:flutter/cupertino.dart';
 import 'package:homely_seller/Helper/Constant.dart';
 import 'package:http/http.dart' as http;
 import 'package:homely_seller/Helper/ApiBaseHelper.dart';
@@ -583,13 +584,43 @@ final picker =  ImagePicker();
     return Scaffold(
       key: _scaffoldKey,
       backgroundColor: lightWhite,
-      appBar: getAppBar(getTranslated(context, "EDIT_PROFILE_LBL")!, context),
+      appBar: getAppBar(context),
       body: Stack(
         children: <Widget>[
           bodyPart(),
           showCircularProgress(_isLoading, primary)
         ],
       ),
+    );
+  }
+
+  var onOf = false;
+  getAppBar(BuildContext context) {
+    return AppBar(
+      title: Text(
+        "Edit Profile",
+        style: TextStyle(color: grad2Color, fontSize: 18),
+      ),
+      backgroundColor: white,
+      iconTheme: IconThemeData(color: grad2Color),
+      actions: [
+        Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            onOf ? Text("Online") : Text("Offline"),
+          ],
+        ),
+        CupertinoSwitch(
+            trackColor: primary,
+            value: onOf,
+            onChanged: (value) {
+              setState(() {
+                onOf = value;
+                changePassWord();
+              });
+            }
+        ),
+      ],
     );
   }
 
@@ -696,7 +727,6 @@ final picker =  ImagePicker();
                   //     ],
                   //   ),
                   // ),
-
                   getFurthHeader(),
                   // changePass(),
                   // updateBtn(),
@@ -712,7 +742,7 @@ final picker =  ImagePicker();
 
   getprofileImage() {
     return Container(
-      padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 30.0),
+      padding: EdgeInsets.only(left: 20.0, right: 20.0, top: 10.0),
       child: Column(
         children: [
           CircleAvatar(
@@ -3975,12 +4005,13 @@ final picker =  ImagePicker();
         NEWPASS: newPassC,
         "adhar_no": newAdhar ?? "",
         'fassai_number': userfassai ?? "",
+        "self_pickup": onOf ? '1' : '0',
       };
       apiBaseHelper.postAPICall(updateUserApi, parameter).then(
         (getdata) async {
           bool error = getdata["error"];
           String? msg = getdata["message"];
-          print("11111111111111111111111111${updateUserApi}");
+          print("update user api and parameter $updateUserApi $parameter");
           print("update paramters here" + parameter.toString());
           print(getdata["data"]);
           if (!error) {
@@ -3988,11 +4019,11 @@ final picker =  ImagePicker();
             setSnackbar(msg!);
           } else {
             Navigator.pop(context);
-            setSnackbar(msg!);
+            // setSnackbar(msg!);
           }
         },
         onError: (error) {
-          setSnackbar(error.toString());
+          // setSnackbar(error.toString());
         },
       );
     } else {

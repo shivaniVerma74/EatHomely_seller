@@ -43,10 +43,10 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
   Order_Model? model;
   String? pDate, prDate, sDate, dDate, cDate, rDate;
   List<String> statusList = [
-    PLACED,
-    PROCESSED,
-    SHIPED,
-    // DELIVERD,
+    // PLACED,
+    // PROCESSED,
+    // SHIPED,
+    DELIVERD,
     // CANCLED,
     // RETURNED,
   ];
@@ -151,12 +151,11 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
         SellerId: CUR_USERID,
         Id: widget.id,
       };
-      print("checking order detail here now ${getOrdersApi} and ${parameter}");
+      print("checking order detail here now $getOrdersApi and $parameter");
       apiBaseHelper.postAPICall(getOrdersApi, parameter).then(
         (getdata) async {
           bool error = getdata["error"];
           String? msg = getdata["message"];
-
           if (!error) {
             var data = getdata["data"];
             sgst = data[0]['cgst'];
@@ -164,35 +163,24 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
             if (sgst == "") {
               totalTax = 0.0;
             } else {
-              totalTax =
-                  double.parse(sgst.toString()) + double.parse(cgst.toString());
+              totalTax = double.parse(sgst.toString()) + double.parse(cgst.toString());
             }
-
-            print("checking data here now final ${sgst} and ${sgst}");
+            print("checking data here now final $sgst and $sgst");
             if (data.length != 0) {
               searchList.clear();
-              tempList = (data as List)
-                  .map((data) => new Order_Model.fromJson(data))
-                  .toList();
-
+              tempList = (data as List).map((data) => new Order_Model.fromJson(data)).toList();
               for (int i = 0; i < tempList[0].itemList!.length; i++)
-                tempList[0].itemList![i].curSelected =
-                    tempList[0].itemList![i].status;
+                tempList[0].itemList![i].curSelected = tempList[0].itemList![i].status;
               searchList.addAll(delBoyList);
               if (tempList[0].itemList![0].deliveryBoyId != null)
-                selectedDelBoy = delBoyList.indexWhere(
-                    (f) => f.id == tempList[0].itemList![0].deliveryBoyId);
-
+                selectedDelBoy = delBoyList.indexWhere((f) => f.id == tempList[0].itemList![0].deliveryBoyId);
               if (selectedDelBoy == -1) selectedDelBoy = null;
-
               if (tempList[0].payMethod == "Bank Transfer") {
                 statusList.removeWhere((element) => element == PLACED);
               }
               curStatus = tempList[0].itemList![0].activeStatus!;
               if (tempList[0].listStatus!.contains(PLACED)) {
-                pDate = tempList[0]
-                    .listDate![tempList[0].listStatus!.indexOf(PLACED)];
-
+                pDate = tempList[0].listDate![tempList[0].listStatus!.indexOf(PLACED)];
                 if (pDate != null) {
                   List d = pDate!.split(" ");
                   pDate = d[0] + "\n" + d[1];

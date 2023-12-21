@@ -588,6 +588,18 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
     );
   }
 
+
+  addProductNameONe() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      mainAxisAlignment: MainAxisAlignment.start,
+      children: [
+        productTextone(),
+        productTextFieldOne(),
+      ],
+    );
+  }
+
   productText() {
     return Padding(
       padding: EdgeInsets.only(
@@ -597,6 +609,23 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
       ),
       child: Text(
         getTranslated(context, "PRODUCTNAME_LBL")!,
+        style: TextStyle(
+          fontSize: 16,
+          color: black,
+        ),
+      ),
+    );
+  }
+
+  productTextone() {
+    return Padding(
+      padding: EdgeInsets.only(
+        right: 10,
+        left: 10,
+        top: 15,
+      ),
+      child: Text(
+        getTranslated(context, "LIMIT_LBL")!,
         style: TextStyle(
           fontSize: 16,
           color: black,
@@ -636,6 +665,47 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
                 color: Colors.grey[600],
                 fontWeight: FontWeight.normal,
               ),
+          contentPadding: EdgeInsets.symmetric(
+            horizontal: 10,
+            vertical: 5,
+          ),
+        ),
+      ),
+    );
+  }
+
+
+  productTextFieldOne() {
+    return Container(
+      width: width,
+      // height: 50,
+      padding: EdgeInsets.only(
+        left: 10,
+        right: 10,
+      ),
+      child: TextFormField(
+        onFieldSubmitted: (v) {
+          FocusScope.of(context).requestFocus(productFocus);
+        },
+        focusNode: productFocus,
+        keyboardType: TextInputType.text,
+        style: TextStyle(
+          color: fontColor,
+          fontWeight: FontWeight.normal,
+        ),
+        controller: dayLimitCtr,
+        textInputAction: TextInputAction.next,
+        inputFormatters: [FilteringTextInputFormatter.singleLineFormatter],
+        // onChanged: (value) {
+        //   productName = value;
+        // },
+        validator: (val) => validateProduct(val, context),
+        decoration: InputDecoration(
+          hintText: getTranslated(context, "ADD_LIMIT_LBL")!,
+          hintStyle: Theme.of(this.context).textTheme.subtitle2!.copyWith(
+            color: Colors.grey[600],
+            fontWeight: FontWeight.normal,
+          ),
           contentPadding: EdgeInsets.symmetric(
             horizontal: 10,
             vertical: 5,
@@ -5961,6 +6031,7 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
     );
   }
 
+  TextEditingController dayLimitCtr = TextEditingController();
 //==============================================================================
 //=========================== Add Product API Call =============================
   Future<void> addProductAPI(List<String> attributesValuesIds) async {
@@ -6002,6 +6073,7 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
         request.fields[CodAllowed] = isCODAllow.toString();
         request.fields[IsReturnable] = isReturnable.toString();
         request.fields['sub_category_id'] = selectedSubCategory.toString();
+        request.fields['day_limit'] = dayLimitCtr.text;
         request.fields[IsCancelable] = isCancelable.toString();
         request.fields[ProInputImage] = productImage;
         if (tillwhichstatus != null)
@@ -6032,8 +6104,7 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
         // this is complecated
         // request.fields['add_on'] = addonList.toString();
         request.fields[ProductType] = productType.toString();
-        request.fields[VariantStockLevelType] =
-            variantStockLevelType.toString();
+        request.fields[VariantStockLevelType] = variantStockLevelType.toString();
         request.fields[AttributeValues] = attributesValuesIds.join(",");
         //
         request.fields['add_name_app'] = finalAddonName;
@@ -6046,6 +6117,7 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
         // for(var i=0;i<addonPriceList.length;i++){
         //   request.fields['add_price[]'] = addonPriceList[i];
         // }
+        print("addd productc pararar ${request.fields}");
         for (var i = 0; i < addonImageList.length; i++) {
           addonImageList == null
               ? null
@@ -6173,6 +6245,7 @@ class _AddProductState extends State<AddProduct> with TickerProviderStateMixin {
           children: [
             addProductName(),
             shortDescription(),
+            addProductNameONe(),
             //  tagsAdd(),
             // taxSelection(),
             indicatorField(),

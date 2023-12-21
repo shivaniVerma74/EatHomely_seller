@@ -57,7 +57,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Homely Seller',
+      title: 'Eat Homely Kitchen Partner',
       theme: ThemeData(
         primarySwatch: primary_app,
         fontFamily: 'opensans',
