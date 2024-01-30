@@ -24,6 +24,7 @@ class Order_Model {
       orderTime,
       dateTime,
       isCancleable,
+      deliveryType,
       isReturnable,
       isAlrCancelled,
       isAlrReturned,
@@ -70,6 +71,7 @@ class Order_Model {
       this.isCancleable,
       this.isAlrCancelled,
       this.isAlrReturned,
+        this.deliveryType,
       this.rtnReqSubmitted,
       this.sgst,
       this.cgst,
@@ -155,6 +157,7 @@ class Order_Model {
       driverMobile: parsedJson["delivery_boy_number"],
       driverName: parsedJson["delivery_boy_name"],
       deliverTime: parsedJson["delivered_time"],
+      deliveryType: parsedJson['delivery_type']
       //deliveryBoyId: parsedJson[Delivery_Boy_Id]
     );
   }

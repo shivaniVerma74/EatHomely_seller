@@ -43,10 +43,25 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
   Order_Model? model;
   String? pDate, prDate, sDate, dDate, cDate, rDate;
   List<String> statusList = [
+    PROCESSED,
+    // PLACED,
+    // PROCESSED,
+    // SHIPED,
+    DELIVERD
+    // READYFORPICKUP,
+    // CANCLED,
+    // RETURNED,
+  ];
+
+
+  List<String> statusList2 = [
+    PROCESSED,
+    // READYFORPICKUP,
     // PLACED,
     // PROCESSED,
     // SHIPED,
     DELIVERD,
+    PAYMENTCOMPLETE,
     // CANCLED,
     // RETURNED,
   ];
@@ -121,7 +136,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
       SellerId: CUR_USERID,
     };
 
-    print("checking parameter here ${getDeliveryBoysApi} and ${parameter}");
+    print("checking parameter here $getDeliveryBoysApi and $parameter");
     apiBaseHelper.postAPICall(getDeliveryBoysApi, parameter).then(
       (getdata) async {
         bool error = getdata["error"];
@@ -521,7 +536,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                           )
                                         : Container(),
                                     //iteam's here
-
+                                    widget.model?.deliveryType == "2" ?
                                     Container(
                                       child: Card(
                                         child: Column(
@@ -537,12 +552,9 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             // SizedBox(
                                             //   height: 5,
                                             // ),
-                                            widget.model!.itemList![0].status !=
-                                                    DELIVERD
+                                            widget.model!.itemList![0].status != DELIVERD
                                                 ? Padding(
-                                                    padding: const EdgeInsets
-                                                            .symmetric(
-                                                        vertical: 10.0),
+                                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
                                                     child: Row(
                                                       children: [
                                                         Expanded(
@@ -582,18 +594,15 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                                   },
                                                                 );
                                                               },
-                                                              items: statusList
-                                                                  .map(
+                                                              items: statusList.map(
                                                                 (String st) {
                                                                   return DropdownMenuItem<
                                                                       String>(
                                                                     value: st,
-                                                                    child: st ==
-                                                                            "shipped"
+                                                                    child: st == "shipped"
                                                                         ? Text(
                                                                             "Picked Up",
-                                                                            style:
-                                                                                Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                                            style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
                                                                           )
                                                                         : st == "processed"
                                                                             ? Text(
@@ -621,7 +630,100 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                           ],
                                         ),
                                       ),
-                                    ),
+                                    ): SizedBox(),
+                                    widget.model?.deliveryType == "1" ?  Container(
+                                      child: Card(
+                                        child: Column(
+                                          crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                          children: [
+                                            Padding(
+                                              padding: EdgeInsets.only(left: 10, top: 6),
+                                              child:
+                                              Text("Update Order Status"),
+                                            ),
+                                            // SizedBox(
+                                            //   height: 5,
+                                            // ),
+                                            widget.model!.itemList![0].status != DELIVERD
+                                                ?
+                                            Padding(
+                                                 padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                                 child: Row(
+                                                 children: [
+                                                  Expanded(
+                                                    child: Padding(
+                                                      padding: const EdgeInsets.only(right: 8.0, left: 8),
+                                                      child: DropdownButtonFormField(
+                                                        dropdownColor: white,
+                                                        isDense: true,
+                                                        iconEnabledColor: primary,
+                                                        hint: Text(
+                                                          getTranslated(context, "UpdateStatus")!,
+                                                          style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
+                                                              color: primary, fontWeight: FontWeight.bold),
+                                                        ),
+                                                        decoration: InputDecoration(
+                                                          filled: true,
+                                                          isDense: true,
+                                                          fillColor: white,
+                                                          contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                                          enabledBorder: OutlineInputBorder(
+                                                            borderSide: BorderSide(color: primary),
+                                                          ),
+                                                        ),
+                                                        value: null,
+                                                        onChanged: (dynamic newValue) {
+                                                          setState(
+                                                                () {
+                                                              widget.model!.itemList![0].curSelected = newValue;
+                                                              updateOrder(
+                                                                widget.model!.itemList![0].curSelected,
+                                                                updateOrderItemApi,
+                                                                widget.model!.itemList![0].id,
+                                                                true,
+                                                                0,
+                                                              );
+                                                            },
+                                                          );
+                                                        },
+                                                        items: statusList2.map(
+                                                              (String st) {
+                                                            return DropdownMenuItem<
+                                                                String>(
+                                                              value: st,
+                                                              child: st == "shipped"
+                                                                  ? Text(
+                                                                "Picked Up",
+                                                                style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                              )
+                                                                  : st == "processed"
+                                                                  ? Text(
+                                                                "Preparing",
+                                                                style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                              )
+                                                                  : Text(
+                                                                capitalize(st),
+                                                                style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                              ),
+                                                            );
+                                                          },
+                                                        ).toList(),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            )
+                                                : Text(
+                                              "DELIVERED",
+                                              style: TextStyle(
+                                                  color: primary),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ) : SizedBox(),
                                     ListView.builder(
                                       shrinkWrap: true,
                                       itemCount: model!.itemList!.length,
@@ -794,8 +896,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             model!.id, true, itemindex);
                                         setState(
                                           () {
-                                            deliverBoy =
-                                                searchList[index].name!;
+                                            deliverBoy = searchList[index].name!;
                                           },
                                         );
                                       }
@@ -1695,7 +1796,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
     }
 
     String finalIds = idList.join(",");
-    print("item id is here ${finalIds}");
+    print("item id is here $finalIds");
 
     _isNetworkAvail = await isNetworkAvailable();
     if (true) {
@@ -1709,36 +1810,32 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
           }
           if (selectedDelBoy != null)
             parameter[DEL_BOY_ID] = searchList[selectedDelBoy!].id;
-          print("parameter and api " +
+            print("parameter and api " +
               parameter.toString() +
-              "${updateOrderItemApi}");
+              "$updateOrderItemApi");
 
           apiBaseHelper.postAPICall(updateOrderItemApi, parameter).then(
             (getdata) async {
               bool error = getdata["error"];
               String msg = getdata["message"];
-              setSnackbar(msg);
+              // setSnackbar(msg);
               print("msg : $msg");
               if (!error) {
-                if (item)
-                  tempList[0].itemList![index].status = status;
-                else
-                  tempList[0].itemList![0].activeStatus = status;
-
+                if (item) tempList[0].itemList![index].status = status;
+                else tempList[0].itemList![0].activeStatus = status;
                 if (selectedDelBoy != null)
-                  tempList[0].itemList![0].deliveryBoyId =
-                      searchList[selectedDelBoy!].id;
+                  tempList[0].itemList![0].deliveryBoyId = searchList[selectedDelBoy!].id;
                 getOrderDetail();
               } else {
                 getOrderDetail();
               }
             },
             onError: (error) {
-              setSnackbar(error.toString());
+              // setSnackbar(error.toString());
             },
           );
         } on TimeoutException catch (_) {
-          setSnackbar(getTranslated(context, "somethingMSg")!);
+          // setSnackbar(getTranslated(context, "somethingMSg")!);
         }
       } else {
         setState(() {

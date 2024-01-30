@@ -898,7 +898,6 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               pan_number.toString(),
               status.toString(),
               storeLogo.toString(),
-
             );
           }
           setState(() {
@@ -938,14 +937,12 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     //     }
     //   });
     // }
-
     var headers = {
       'Cookie': 'ci_session=f02741f77bb53eeaf1a6be0a045cb6f11b68f1a6'
     };
-    var request =
-        http.MultipartRequest('POST', Uri.parse('${baseUrl}update_online'));
+    var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}update_online'));
     request.fields.addAll(
-        {'id': '$CUR_USERID}', 'open_close_status': onOf ? '1' : '0'});
+        {'id': '$CUR_USERID', 'open_close_status': onOf ? '1' : '0'});
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
     if (response.statusCode == 200) {
@@ -1584,7 +1581,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
                         firstHeader(),
                         // secondHeader(),
                         thirdHeader(),
-                        fourthHeader(),
+                        // fourthHeader(),
                         // fifthHeader(),
                         SizedBox(height: 10),
                         Text(
@@ -2100,7 +2097,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        getSalesReport(),
+        // getSalesReport(),
         getRestaurantReport(),
       ],
     );

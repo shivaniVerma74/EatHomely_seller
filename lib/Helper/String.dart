@@ -107,9 +107,10 @@ const String StoreLogo = "logo";
 String LIMIT = "limit";
 
 const String SHIPED = 'shipped';
-const String PROCESSED = 'food Prepared';
+const String PROCESSED = 'food prepared';
+const String READYFORPICKUP = 'Ready For Pickup';
+const String PAYMENTCOMPLETE = 'Payment Complete';
 const String DELIVERD = 'delivered';
-// const String DELIVERD = 'self pickup';
 const String CANCLED = 'cancelled';
 const String RETURNED = 'returned';
 const String WAITING = 'awaiting';

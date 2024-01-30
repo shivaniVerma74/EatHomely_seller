@@ -607,7 +607,7 @@ final picker =  ImagePicker();
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            onOf ? Text("Online") : Text("Offline"),
+            onOf ? Text("Delivery Type Online", style: TextStyle(fontSize: 12),) : Text("Delivery Type Offline",style: TextStyle(fontSize: 12)),
           ],
         ),
         CupertinoSwitch(
