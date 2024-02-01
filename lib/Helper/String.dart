@@ -100,6 +100,7 @@ const String accountName = 'account_name';
 const String bankCode = 'bank_code';
 const String bankName = 'bank_name';
 const String taxName = 'tax_name';
+const String SelfPickUp = 'self_pickup';
 const String adharNo = 'adhar_no';
 const String taxNumber = 'tax_number';
 const String panNumber = 'pan_number';
@@ -107,7 +108,7 @@ const String StoreLogo = "logo";
 String LIMIT = "limit";
 
 const String SHIPED = 'shipped';
-const String PROCESSED = 'food prepared';
+const String PROCESSED = 'processed';
 const String READYFORPICKUP = 'Ready For Pickup';
 const String PAYMENTCOMPLETE = 'Payment Complete';
 const String DELIVERD = 'delivered';

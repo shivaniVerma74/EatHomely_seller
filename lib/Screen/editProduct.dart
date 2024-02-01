@@ -451,7 +451,7 @@ class _EditProductState extends State<EditProduct>
     productImage = '';
     productImageUrl = '';
     if (model != null) {
-      productImage = model!.image.toString().split("eatoz").last;
+      productImage = model!.image.toString().split("eatoz_clone").last;
         productImageUrl = model!.image.toString();
     }
     uploadedVideoName = '';
@@ -3526,6 +3526,7 @@ class _EditProductState extends State<EditProduct>
                   builder: (context) => Media(from: "main"),
                 ),
               );
+              print("resulttttt $result");
               if (result != null) {
                 setState(() {
                   productImage = result[0];

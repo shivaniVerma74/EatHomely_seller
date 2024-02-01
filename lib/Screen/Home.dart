@@ -869,6 +869,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
             var latitutute = data[Latitude];
             var longitude = data[Longitude];
             var taxname = data[taxName];
+            var selfPickUp = data[SelfPickUp] ;
             var tax_number = data[taxNumber];
             var pan_number = data[panNumber];
             var adhar_num =  data[adharNo];
@@ -898,6 +899,7 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
               pan_number.toString(),
               status.toString(),
               storeLogo.toString(),
+              selfPickUp.toString()
             );
           }
           setState(() {
@@ -943,14 +945,17 @@ class _HomeState extends State<Home> with TickerProviderStateMixin {
     var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}update_online'));
     request.fields.addAll(
         {'id': '$CUR_USERID', 'open_close_status': onOf ? '1' : '0'});
+    debugPrint("fieldssssss....${request.fields.toString()}");
     request.headers.addAll(headers);
     http.StreamedResponse response = await request.send();
+    debugPrint("Statusss....${response.statusCode}");
     if (response.statusCode == 200) {
+
       var finalResult = await response.stream.bytesToString();
       final jsonResult = json.decode(finalResult);
       setState(() {});
     } else {
-      print(response.reasonPhrase);
+      print("reasonnnn"+ response.reasonPhrase.toString());
     }
   }
 

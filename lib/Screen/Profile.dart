@@ -216,6 +216,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
 //================= User Details frome Shared Preferance =======================
 
   String? sellerProfile;
+  String? selfPickUp;
 
   getUserDetails() async {
     SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -251,6 +252,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
     status = await getPrefrence(STATUS);
     userfassai = await getPrefrence('fassai_number');
     adharNumber= await getPrefrence(adharNo);
+    selfPickUp = await getPrefrence(SelfPickUp);
 
     storelogo = await getPrefrence(StoreLogo);
     mobileC!.text = mobile ?? "";
@@ -271,7 +273,7 @@ class StateProfile extends State<Profile> with TickerProviderStateMixin {
     pannumberC!.text = pannumber ?? "";
     fassaiC!.text = userfassai ?? "";
     adharC!.text = adharNumber ?? "";
-
+    onOf = selfPickUp == "1" ? true : false;
     setState(() {});
   }
 
@@ -607,7 +609,7 @@ final picker =  ImagePicker();
         Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            onOf ? Text("Delivery Type Online", style: TextStyle(fontSize: 12),) : Text("Delivery Type Offline",style: TextStyle(fontSize: 12)),
+            onOf ? Text("Self Pick Up On", style: TextStyle(fontSize: 12),) : Text("Self Pick Up Off",style: TextStyle(fontSize: 12)),
           ],
         ),
         CupertinoSwitch(
@@ -616,7 +618,8 @@ final picker =  ImagePicker();
             onChanged: (value) {
               setState(() {
                 onOf = value;
-                changePassWord();
+                // changePassWord();
+                updateSelfPickUp();
               });
             }
         ),
@@ -3978,6 +3981,30 @@ final picker =  ImagePicker();
   }
 //==============================================================================
 //==================== Same API But Only PassPassword ==========================
+
+
+  Future<void> updateSelfPickUp() async {
+    var headers = {
+      'Cookie': 'ci_session=f02741f77bb53eeaf1a6be0a045cb6f11b68f1a6'
+    };
+    var request = http.MultipartRequest('POST', Uri.parse('${baseUrl}update_onlines'));
+    request.fields.addAll(
+        {'id': '$CUR_USERID', 'self_pickup': onOf ? '1' : '0'});
+    debugPrint("fieldssssss....${request.fields.toString()}");
+    request.headers.addAll(headers);
+    http.StreamedResponse response = await request.send();
+    debugPrint("Statusss....${response.statusCode}");
+    if (response.statusCode == 200) {
+
+      var finalResult = await response.stream.bytesToString();
+      final jsonResult = json.decode(finalResult);
+      setState(() {});
+    } else {
+      print("reasonnnn"+ response.reasonPhrase.toString());
+    }
+
+  }
+
 
   Future<void> changePassWord() async {
     _isNetworkAvail = await isNetworkAvailable();

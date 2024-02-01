@@ -40,14 +40,15 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
   bool _isNetworkAvail = true;
 
   String? deliverBoy;
+  var selectStatus;
   Order_Model? model;
   String? pDate, prDate, sDate, dDate, cDate, rDate;
   List<String> statusList = [
-    PROCESSED,
-    // PLACED,
     // PROCESSED,
+    // PLACED,
+    PROCESSED,
     // SHIPED,
-    DELIVERD
+    DELIVERD,
     // READYFORPICKUP,
     // CANCLED,
     // RETURNED,
@@ -87,6 +88,12 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
   @override
   void initState() {
     // getDeliveryBoy();
+    for (int i = 0; i < widget.model!.itemList!.length; i++) {
+      widget.model!.itemList![i].curSelected =
+          widget.model!.itemList![i].status;
+      selectStatus = widget.model!.itemList![i].status??null;
+      print("${widget.model!.itemList![i].status}"+"((((((((((((((((((((((((((");
+    }
     Future.delayed(Duration.zero, this.getOrderDetail);
 
     super.initState();
@@ -537,98 +544,198 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                         : Container(),
                                     //iteam's here
                                     widget.model?.deliveryType == "2" ?
-                                    Container(
-                                      child: Card(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Padding(
-                                              padding: EdgeInsets.only(
-                                                  left: 10, top: 6),
-                                              child:
-                                                  Text("Update Order Status"),
-                                            ),
-                                            // SizedBox(
-                                            //   height: 5,
-                                            // ),
-                                            widget.model!.itemList![0].status != DELIVERD
-                                                ? Padding(
-                                                    padding: const EdgeInsets.symmetric(vertical: 10.0),
-                                                    child: Row(
-                                                      children: [
-                                                        Expanded(
-                                                          child: Padding(
-                                                            padding: const EdgeInsets.only(right: 8.0, left: 8),
-                                                                 child: DropdownButtonFormField(
-                                                                  dropdownColor: white,
-                                                                  isDense: true,
-                                                                  iconEnabledColor: primary,
-                                                                  hint: Text(
-                                                                  getTranslated(context, "UpdateStatus")!,
-                                                                  style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
-                                                                        color: primary,
-                                                                        fontWeight: FontWeight.bold),
-                                                              ),
-                                                              decoration: InputDecoration(
-                                                                filled: true,
-                                                                isDense: true,
-                                                                fillColor: white,
-                                                                contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                                                                enabledBorder: OutlineInputBorder(
-                                                                  borderSide: BorderSide(color: primary),
-                                                                ),
-                                                              ),
-                                                              value: null,
-                                                              onChanged: (dynamic newValue) {
-                                                                setState(
-                                                                  () {
-                                                                    widget.model!.itemList![0].curSelected = newValue;
-                                                                    updateOrder(
-                                                                      widget.model!.itemList![0].curSelected,
-                                                                      updateOrderItemApi,
-                                                                      widget.model!.itemList![0].id,
-                                                                      true,
-                                                                      0,
-                                                                    );
-                                                                  },
-                                                                );
-                                                              },
-                                                              items: statusList.map(
-                                                                (String st) {
-                                                                  return DropdownMenuItem<
-                                                                      String>(
-                                                                    value: st,
-                                                                    child: st == "shipped"
-                                                                        ? Text(
-                                                                            "Picked Up",
-                                                                            style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
-                                                                          )
-                                                                        : st == "processed"
-                                                                            ? Text(
-                                                                                "Preparing",
-                                                                                style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
-                                                                              )
-                                                                            : Text(
-                                                                                capitalize(st),
-                                                                                style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
-                                                                              ),
-                                                                  );
-                                                                },
-                                                              ).toList(),
-                                                            ),
+                                    Card(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: EdgeInsets.only(
+                                                left: 10, top: 6),
+                                            child:
+                                                Text("Update Order Status"),
+                                          ),
+                                          // SizedBox(
+                                          //   height: 5,
+                                          // ),
+                                          widget.model!.itemList![0].status != DELIVERD
+                                              ? Padding(
+                                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
+                                                  child: Row(
+                                                    children: [
+                                                      Expanded(
+                                                        child: Padding(
+                                                          padding: const EdgeInsets.only(right: 8.0, left: 8),
+                                                               child: DropdownButtonFormField(
+                                                                 dropdownColor: white,
+                                                                 isDense: true,
+                                                                 iconEnabledColor: primary,
+                                                                 hint: Text(
+                                                                   getTranslated(context, "UpdateStatus")!,
+                                                                   style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
+                                                                       color: primary, fontWeight: FontWeight.bold),
+                                                                 ),
+                                                                 decoration: InputDecoration(
+                                                                   filled: true,
+                                                                   isDense: true,
+                                                                   fillColor: white,
+                                                                   contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                                                   enabledBorder: OutlineInputBorder(
+                                                                     borderSide: BorderSide(color: primary),
+                                                                   ),
+                                                                 ),
+                                                                 value: selectStatus,
+                                                                 onChanged: (dynamic newValue) {
+                                                                   setState(
+                                                                         () {
+                                                                       widget.model!.itemList![0].curSelected = newValue;
+
+                                                                     },
+                                                                   );
+                                                                 },
+                                                                 items: statusList.map(
+                                                                       (String st) {
+                                                                     return DropdownMenuItem<
+                                                                         String>(
+                                                                       value: st,
+                                                                       child: st == "shipped"
+                                                                           ? Text(
+                                                                         "Picked Up",
+                                                                         style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                                       )
+                                                                           : st == "processed"
+                                                                           ? Text(
+                                                                         "Preparing",
+                                                                         style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                                       )
+                                                                           : Text(
+                                                                         capitalize(st),
+                                                                         style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                                       ),
+                                                                     );
+                                                                   },
+                                                                 ).toList(),
+                                                               ),
+                                                          //      DropdownButtonFormField(
+                                                          //       dropdownColor: white,
+                                                          //       isDense: true,
+                                                          //       iconEnabledColor: primary,
+                                                          //       hint: Text(
+                                                          //       getTranslated(context, "UpdateStatus")!,
+                                                          //       style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
+                                                          //             color: primary,
+                                                          //             fontWeight: FontWeight.bold),
+                                                          //   ),
+                                                          //   decoration: InputDecoration(
+                                                          //     filled: true,
+                                                          //     isDense: true,
+                                                          //     fillColor: white,
+                                                          //     contentPadding: EdgeInsets.symmetric(vertical: 10, horizontal: 10),
+                                                          //     enabledBorder: OutlineInputBorder(
+                                                          //       borderSide: BorderSide(color: primary),
+                                                          //     ),
+                                                          //   ),
+                                                          //   value: selectStatus,
+                                                          //   onChanged: (dynamic newValue) {
+                                                          //     setState(
+                                                          //       () {
+                                                          //         widget.model!.itemList![0].curSelected = newValue;
+                                                          //
+                                                          //       },
+                                                          //     );
+                                                          //   },
+                                                          //   items: statusList.map(
+                                                          //     (String st) {
+                                                          //       // String dropdownValue;
+                                                          //       // String displayText;
+                                                          //
+                                                          //       // if (st == "shipped") {
+                                                          //       //   dropdownValue = "shipped";
+                                                          //       //   displayText = "Picked Up";
+                                                          //       // } else
+                                                          //       //   if (st == "processed") {
+                                                          //       //   dropdownValue = "processed";
+                                                          //       //   displayText = "Preparing";
+                                                          //       // } else {
+                                                          //       //   dropdownValue = st;
+                                                          //       //   displayText = capitalize(st);
+                                                          //       // }
+                                                          //       return DropdownMenuItem<
+                                                          //           String>(
+                                                          //         value: st,
+                                                          //         child:
+                                                          //         st == "shipped"
+                                                          //             ? Text(
+                                                          //                 "Picked Up",
+                                                          //                 style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                          //               )
+                                                          //             : st == "processed"
+                                                          //                 ? Text(
+                                                          //                     "Preparing",
+                                                          //                     style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                          //                   )
+                                                          //                 :
+                                                          //         Text(
+                                                          //           capitalize(st),
+                                                          //                     style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
+                                                          //                   ),
+                                                          //       );
+                                                          //     },
+                                                          //   ).toList(),
+                                                          // ),
+                                                        ),
+                                                      ),
+                                                      RawMaterialButton(
+                                                        constraints: const BoxConstraints.expand(width: 42, height: 42),
+                                                        onPressed: () {
+                                                          updateOrder(
+                                                            widget.model!.itemList![0].curSelected,
+                                                            updateOrderItemApi,
+                                                            widget.model!.itemList![0].id,
+                                                            true,
+                                                            0,
+                                                          );
+                                                          // if (widget.model!.itemList![0].item_otp != null &&
+                                                          //     widget.model!.itemList![0].item_otp!.isNotEmpty &&
+                                                          //     widget.model!.itemList![0].item_otp != "0" &&
+                                                          //     widget.model!.itemList![0].curSelected == DELIVERD) {
+                                                          //   otpDialog(
+                                                          //       widget.model!.itemList![0].curSelected,
+                                                          //       widget.model!.otp,
+                                                          //       model.id, true, 0);
+                                                          // } else {
+                                                          //   updateOrder(
+                                                          //       widget.model!.itemList![0].curSelected,
+                                                          //       model.id, true, 0,
+                                                          //       widget.model!.itemList![0].item_otp);
+                                                          // }
+
+                                                        },
+
+
+                                                        elevation: 2.0,
+                                                        fillColor: fontColor,
+                                                        padding: const EdgeInsets.only(left: 5),
+                                                        child: const Align(
+                                                          alignment: Alignment.center,
+                                                          child: Icon(
+                                                            Icons.send,
+                                                            size: 20,
+                                                            color: white,
                                                           ),
                                                         ),
-                                                      ],
-                                                    ),
-                                                  )
-                                                : Text(
-                                                    "DELIVERED",
-                                                    style: TextStyle(
-                                                        color: primary),
+                                                        shape: const CircleBorder(),
+                                                      ),
+
+                                                    ],
                                                   ),
-                                          ],
-                                        ),
+                                                )
+                                              : Text(
+                                                  "DELIVERED",
+                                                  style: TextStyle(
+                                                      color: primary),
+                                                ),
+                                        ],
                                       ),
                                     ): SizedBox(),
                                     widget.model?.deliveryType == "1" ?  Container(
@@ -672,18 +779,12 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                             borderSide: BorderSide(color: primary),
                                                           ),
                                                         ),
-                                                        value: null,
+                                                        value: selectStatus,
                                                         onChanged: (dynamic newValue) {
                                                           setState(
                                                                 () {
                                                               widget.model!.itemList![0].curSelected = newValue;
-                                                              updateOrder(
-                                                                widget.model!.itemList![0].curSelected,
-                                                                updateOrderItemApi,
-                                                                widget.model!.itemList![0].id,
-                                                                true,
-                                                                0,
-                                                              );
+
                                                             },
                                                           );
                                                         },
@@ -712,6 +813,47 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                       ),
                                                     ),
                                                   ),
+                                                   RawMaterialButton(
+                                                     constraints: const BoxConstraints.expand(width: 42, height: 42),
+                                                     onPressed: () {
+                                                       updateOrder(
+                                                         widget.model!.itemList![0].curSelected,
+                                                         updateOrderItemApi,
+                                                         widget.model!.itemList![0].id,
+                                                         true,
+                                                         0,
+                                                       );
+                                                       // if (widget.model!.itemList![0].item_otp != null &&
+                                                       //     widget.model!.itemList![0].item_otp!.isNotEmpty &&
+                                                       //     widget.model!.itemList![0].item_otp != "0" &&
+                                                       //     widget.model!.itemList![0].curSelected == DELIVERD) {
+                                                       //   otpDialog(
+                                                       //       widget.model!.itemList![0].curSelected,
+                                                       //       widget.model!.otp,
+                                                       //       model.id, true, 0);
+                                                       // } else {
+                                                       //   updateOrder(
+                                                       //       widget.model!.itemList![0].curSelected,
+                                                       //       model.id, true, 0,
+                                                       //       widget.model!.itemList![0].item_otp);
+                                                       // }
+
+                                                     },
+
+
+                                                     elevation: 2.0,
+                                                     fillColor: fontColor,
+                                                     padding: const EdgeInsets.only(left: 5),
+                                                     child: const Align(
+                                                       alignment: Alignment.center,
+                                                       child: Icon(
+                                                         Icons.send,
+                                                         size: 20,
+                                                         color: white,
+                                                       ),
+                                                     ),
+                                                     shape: const CircleBorder(),
+                                                   ),
                                                 ],
                                               ),
                                             )
@@ -1818,7 +1960,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
             (getdata) async {
               bool error = getdata["error"];
               String msg = getdata["message"];
-              // setSnackbar(msg);
+              setSnackbar(msg);
               print("msg : $msg");
               if (!error) {
                 if (item) tempList[0].itemList![index].status = status;
@@ -1831,11 +1973,11 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
               }
             },
             onError: (error) {
-              // setSnackbar(error.toString());
+              setSnackbar(error.toString());
             },
           );
         } on TimeoutException catch (_) {
-          // setSnackbar(getTranslated(context, "somethingMSg")!);
+          setSnackbar(getTranslated(context, "somethingMSg")!);
         }
       } else {
         setState(() {

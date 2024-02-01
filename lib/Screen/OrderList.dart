@@ -801,7 +801,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
       back = Colors.black;
     else
       back = Colors.cyan;
-
+   print("payMethod  ${model.payMethod!}");
     return model.itemList!.isNotEmpty
         ? Card(
             elevation: 0,
@@ -950,7 +950,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                                 color: secondary,
                               ),
                               Text(
-                                " " + model.payMethod!,
+                                model.payMethod! == "UPI"? " Already Paid":" ${model.payMethod!}",
                               ),
                             ],
                           ),
@@ -1118,7 +1118,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                         id: model.id,
                       ),
                     ),
-                  );
+                  ).then((value) => _refresh());
                 }
                 setState(
                   () {

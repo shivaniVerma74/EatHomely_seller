@@ -397,6 +397,7 @@ Future<void> saveUserDetail(
   String pan_number,
   String status,
   String storelogo,
+    String selfPickUp,
 ) async {
   final waitList = <Future<void>>[];
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -411,6 +412,7 @@ Future<void> saveUserDetail(
   waitList.add(prefs.setString(accountNumber, accNo));
   waitList.add(prefs.setString(accountName, accname));
   waitList.add(prefs.setString(BankCOde, bankCode));
+  waitList.add(prefs.setString(SelfPickUp, selfPickUp));
   waitList.add(prefs.setString(bankNAme, bankName));
   waitList.add(prefs.setString(Latitude, latitutute));
   waitList.add(prefs.setString(Longitude, longitude));

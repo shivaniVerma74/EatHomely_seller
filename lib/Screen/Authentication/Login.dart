@@ -44,6 +44,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       email,
       id,
       balance,
+      selfPickUp,
       image,
       address,
       city,
@@ -283,6 +284,7 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           pan_number = data[panNumber] ?? "";
           status = data[STATUS] ?? "";
           storeLogo = data[StoreLogo] ?? "";
+          selfPickUp = data[SelfPickUp]??"";
 
           saveUserDetail(
             id!,
@@ -305,6 +307,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
             adharNo,
             status!,
             storeLogo!,
+            selfPickUp!,
+
           );
           print("storeeee nameeee isss ${RESTRAUNT_NAME}");
           setPrefrenceBool(isLogin, true);
