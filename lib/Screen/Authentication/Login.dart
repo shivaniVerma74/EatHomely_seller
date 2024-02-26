@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:homely_seller/Helper/ApiBaseHelper.dart';
 import 'package:homely_seller/Helper/AppBtn.dart';
 import 'package:homely_seller/Helper/Color.dart';
@@ -247,14 +248,15 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
       Password: password,
       "fcm_id": "$fcmToken",
     };
-
+    print("login parameter $data");
     apiBaseHelper.postAPICall(getUserLoginApi, data).then(
       (getdata) async {
         bool error = getdata["error"];
         String? msg = getdata["message"];
         print(getUserLoginApi);
         if (!error) {
-          //setSnackbar(msg!);
+          Fluttertoast.showToast(msg: msg!);
+          // setSnackbar(msg!);
           var data = getdata["data"][0];
           id = data[Id];
           username = data[Username];
@@ -320,7 +322,8 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
           );
         } else {
           await buttonController!.reverse();
-          setSnackbar(msg!);
+          Fluttertoast.showToast(msg: msg!);
+          // setSnackbar(msg!);
           setState(() {});
         }
       },

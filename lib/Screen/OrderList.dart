@@ -801,7 +801,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
       back = Colors.black;
     else
       back = Colors.cyan;
-   print("payMethod  ${model.payMethod!}");
+    print("payMethod  ${model.payMethod!}");
     return model.itemList!.isNotEmpty
         ? Card(
             elevation: 0,
@@ -846,7 +846,7 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                             child: model.itemList![0].activeStatus ==
                                     "processed"
                                 ? Text(
-                                    "Preparing",
+                                    "food prepared",
                                     style: TextStyle(color: white),
                                   )
                                 : model.itemList![0].activeStatus == "shipped"
@@ -854,11 +854,17 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                                         "Picked Up",
                                         style: TextStyle(color: white),
                                       )
-                                    : Text(
-                                        capitalize(
-                                            model.itemList![0].activeStatus!),
-                                        style: TextStyle(color: white),
-                                      ),
+                                    : model.itemList![0].activeStatus ==
+                                            "food prepared"
+                                        ? Text(
+                                            "order accepted",
+                                            style: TextStyle(color: white),
+                                          )
+                                        : Text(
+                                            capitalize(model
+                                                .itemList![0].activeStatus!),
+                                            style: TextStyle(color: white),
+                                          ),
                           )
                         ],
                       ),
@@ -950,7 +956,10 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                                 color: secondary,
                               ),
                               Text(
-                                model.payMethod! == "UPI"? " Already Paid":" ${model.payMethod!}",
+                                model.payMethod! == "UPI" &&
+                                        model.paymentStatus == "1"
+                                    ? "Unpaid"
+                                    : " ${model.payMethod!}",
                               ),
                             ],
                           ),

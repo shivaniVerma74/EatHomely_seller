@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:homely_seller/Helper/AppBtn.dart';
 import 'package:homely_seller/Helper/Color.dart';
 import 'package:homely_seller/Helper/Session.dart';
@@ -12,6 +13,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import 'WebviewExample.dart';
+
 class OrderDetail extends StatefulWidget {
   final Order_Model? model;
   // final Function? updateHome;
@@ -21,8 +24,7 @@ class OrderDetail extends StatefulWidget {
     Key? key,
     this.model,
     // this.updateHome,
-    this.id,
-  }) : super(key: key);
+    this.id,}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() {
@@ -43,12 +45,13 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
   var selectStatus;
   Order_Model? model;
   String? pDate, prDate, sDate, dDate, cDate, rDate;
+
   List<String> statusList = [
     // PROCESSED,
     // PLACED,
     PROCESSED,
     // SHIPED,
-    DELIVERD,
+    // DELIVERD,
     // READYFORPICKUP,
     // CANCLED,
     // RETURNED,
@@ -56,13 +59,13 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
 
 
   List<String> statusList2 = [
-    PROCESSED,
-    // READYFORPICKUP,
+    // PROCESSED,
+    READYFORPICKUP,
+    PAYMENTCOMPLETE,
     // PLACED,
     // PROCESSED,
     // SHIPED,
     DELIVERD,
-    PAYMENTCOMPLETE,
     // CANCLED,
     // RETURNED,
   ];
@@ -91,7 +94,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
     for (int i = 0; i < widget.model!.itemList!.length; i++) {
       widget.model!.itemList![i].curSelected =
           widget.model!.itemList![i].status;
-      selectStatus = widget.model!.itemList![i].status??null;
+     // selectStatus = widget.model!.itemList![i].status?? null;
       print("${widget.model!.itemList![i].status}"+"((((((((((((((((((((((((((");
     }
     Future.delayed(Duration.zero, this.getOrderDetail);
@@ -498,16 +501,62 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             Row(
                                               children: [
                                                 Text(
-                                                  getTranslated(context,
-                                                          "PAYMENT_MTHD")! +
-                                                      " - ",
+                                                  getTranslated(context, "PAYMENT_MTHD")! + " - ",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: grey),
+                                                ),
+                                                model!.payMethod! == "UPI" ?
+                                                Text(
+                                                  "Pay After Delivery",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: black),
+                                                ):  Text(
+                                                  "All Ready Paid",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: black),
+                                                )
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text("Delivery Method -",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: grey),
+                                                ),
+                                                widget.model?.deliveryType == "2" ?
+                                                Text(
+                                                  "Delivery Agent",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: black),
+                                                ): Text(
+                                                  "self Pick up",
+                                                  style: Theme.of(context)
+                                                      .textTheme
+                                                      .subtitle2!
+                                                      .copyWith(color: black),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text("Order Method -",
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .subtitle2!
                                                       .copyWith(color: grey),
                                                 ),
                                                 Text(
-                                                  model!.payMethod!,
+                                                  model!.urgentDelivery!,
                                                   style: Theme.of(context)
                                                       .textTheme
                                                       .subtitle2!
@@ -542,6 +591,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             ),
                                           )
                                         : Container(),
+
                                     //iteam's here
                                     widget.model?.deliveryType == "2" ?
                                     Card(
@@ -598,17 +648,18 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                                      return DropdownMenuItem<
                                                                          String>(
                                                                        value: st,
-                                                                       child: st == "shipped"
+                                                                       child:
+                                                                       st == "shipped"
                                                                            ? Text(
                                                                          "Picked Up",
                                                                          style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
                                                                        )
-                                                                           : st == "processed"
+                                                                           :
+                                                                       st == "processed"
                                                                            ? Text(
-                                                                         "Preparing",
+                                                                         "Food Ready for Pikcup",
                                                                          style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
-                                                                       )
-                                                                           : Text(
+                                                                       ): Text(
                                                                          capitalize(st),
                                                                          style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
                                                                        ),
@@ -688,13 +739,17 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                       RawMaterialButton(
                                                         constraints: const BoxConstraints.expand(width: 42, height: 42),
                                                         onPressed: () {
-                                                          updateOrder(
-                                                            widget.model!.itemList![0].curSelected,
-                                                            updateOrderItemApi,
-                                                            widget.model!.itemList![0].id,
-                                                            true,
-                                                            0,
-                                                          );
+                                                          if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
+                                                            Fluttertoast.showToast(msg: 'choose different status');
+                                                          } else {
+                                                            updateOrder(
+                                                              widget.model!.itemList![0].curSelected,
+                                                              updateOrderItemApi,
+                                                              widget.model!.itemList![0].id,
+                                                              true,
+                                                              0,
+                                                            );
+                                                          }
                                                           // if (widget.model!.itemList![0].item_otp != null &&
                                                           //     widget.model!.itemList![0].item_otp!.isNotEmpty &&
                                                           //     widget.model!.itemList![0].item_otp != "0" &&
@@ -711,8 +766,6 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                           // }
 
                                                         },
-
-
                                                         elevation: 2.0,
                                                         fillColor: fontColor,
                                                         padding: const EdgeInsets.only(left: 5),
@@ -726,15 +779,20 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                         ),
                                                         shape: const CircleBorder(),
                                                       ),
-
                                                     ],
                                                   ),
                                                 )
-                                              : Text(
-                                                  "DELIVERED",
-                                                  style: TextStyle(
-                                                      color: primary),
+                                              : Container(
+                                            width: MediaQuery.of(context).size.width/1,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.all(10.0),
+                                                  child: Text(
+                                                      "DELIVERED",
+                                                      style: TextStyle(
+                                                          color: primary),
+                                                    ),
                                                 ),
+                                              ),
                                         ],
                                       ),
                                     ): SizedBox(),
@@ -752,8 +810,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             // SizedBox(
                                             //   height: 5,
                                             // ),
-                                            widget.model!.itemList![0].status != DELIVERD
-                                                ?
+                                            widget.model!.itemList![0].status != DELIVERD ?
                                             Padding(
                                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
                                                  child: Row(
@@ -783,7 +840,8 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                         onChanged: (dynamic newValue) {
                                                           setState(
                                                                 () {
-                                                              widget.model!.itemList![0].curSelected = newValue;
+                                                                  selectStatus = newValue ;
+                                                                    widget.model!.itemList![0].curSelected = newValue;
 
                                                             },
                                                           );
@@ -800,7 +858,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                               )
                                                                   : st == "processed"
                                                                   ? Text(
-                                                                "Preparing",
+                                                                "Food Ready for Pikcup",
                                                                 style: Theme.of(this.context).textTheme.subtitle2!.copyWith(color: primary, fontWeight: FontWeight.bold),
                                                               )
                                                                   : Text(
@@ -816,31 +874,31 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                    RawMaterialButton(
                                                      constraints: const BoxConstraints.expand(width: 42, height: 42),
                                                      onPressed: () {
-                                                       updateOrder(
-                                                         widget.model!.itemList![0].curSelected,
-                                                         updateOrderItemApi,
-                                                         widget.model!.itemList![0].id,
-                                                         true,
-                                                         0,
-                                                       );
-                                                       // if (widget.model!.itemList![0].item_otp != null &&
-                                                       //     widget.model!.itemList![0].item_otp!.isNotEmpty &&
-                                                       //     widget.model!.itemList![0].item_otp != "0" &&
-                                                       //     widget.model!.itemList![0].curSelected == DELIVERD) {
-                                                       //   otpDialog(
-                                                       //       widget.model!.itemList![0].curSelected,
-                                                       //       widget.model!.otp,
-                                                       //       model.id, true, 0);
-                                                       // } else {
-                                                       //   updateOrder(
-                                                       //       widget.model!.itemList![0].curSelected,
-                                                       //       model.id, true, 0,
-                                                       //       widget.model!.itemList![0].item_otp);
-                                                       // }
-
+                                                       // updateOrder(
+                                                       //   widget.model!.itemList![0].curSelected,
+                                                       //   updateOrderItemApi,
+                                                       //   widget.model!.itemList![0].id,
+                                                       //   true,
+                                                       //   0,
+                                                       // );
+                                                       if (widget.model!.itemList![0].curSelected == DELIVERD) {
+                                                         otpDialog(
+                                                             widget.model!.itemList![0].curSelected,
+                                                             widget.model!.otp, widget.model!.itemList![0].id, true, 0);
+                                                       } else {
+                                                         if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
+                                                           Fluttertoast.showToast(msg: 'choose different status');
+                                                         } else {
+                                                           updateOrder(
+                                                             widget.model!.itemList![0].curSelected,
+                                                             updateOrderItemApi,
+                                                             widget.model!.itemList![0].id,
+                                                             true,
+                                                             0,
+                                                           );
+                                                         }
+                                                       }
                                                      },
-
-
                                                      elevation: 2.0,
                                                      fillColor: fontColor,
                                                      padding: const EdgeInsets.only(left: 5),
@@ -857,11 +915,17 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                 ],
                                               ),
                                             )
-                                                : Text(
+                                                : Container(
+                                              width: MediaQuery.of(context).size.width/1,
+                                                  child: Padding(
+                                                    padding: const EdgeInsets.all(10.0),
+                                                    child: Text(
                                               "DELIVERED",
                                               style: TextStyle(
-                                                  color: primary),
-                                            ),
+                                                      color: primary),
+                                                    ),
+                                                  ),
+                                                ),
                                           ],
                                         ),
                                       ),
@@ -943,6 +1007,47 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                         ? driverDetails()
                                         : Container(),
                                     priceDetails(),
+                                    Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Row(
+                                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                        children: [
+                                         InkWell(
+                                           onTap: () {
+                                             print("https://developmentalphawizz.com/eatoz_clone/home/edit_orders?edit_id=${widget.id}&seller_id=$CUR_USERID&type=cook");
+                                             launchUrl(Uri.parse('https://developmentalphawizz.com/eatoz_clone/home/edit_orders?edit_id=${widget.id}&seller_id=$CUR_USERID&type=cook'),mode: LaunchMode.externalApplication);
+                                           },
+                                           child: Container(
+                                             height: 40,
+                                             width: 130,
+                                             decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Color(0xff814030),
+                                             ),
+                                             child: Center(child: Text("Cooking Slip", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),)),
+                                             ),
+                                          ),
+                                          InkWell(
+                                            onTap: () {
+                                              print("seller id is nowww $CUR_USERID");
+                                              launchUrl(Uri.parse('https://developmentalphawizz.com/eatoz_clone/home/edit_orders?edit_id=${widget.id}&seller_id=$CUR_USERID&type=cook&types=customer'),mode: LaunchMode.externalApplication);
+                                              // print("workinggg===========");
+                                              // Navigator.push(context,
+                                              //     MaterialPageRoute(builder: (context) {
+                                              //       return WebViewExample(
+                                              //           url:
+                                              //           "https://developmentalphawizz.com/eatoz_clone/home/edit_orders?edit_id=${widget.id}&seller_id=$CUR_USERID&type=cook&types=customer");
+                                              //     }));
+                                            },
+                                            child: Container(
+                                              height: 40,
+                                              width: 150,
+                                              decoration: BoxDecoration(borderRadius: BorderRadius.circular(5), color: Color(0xff814030),
+                                              ),
+                                              child: Center(child: Text("Customer Cooking Slip", style: TextStyle(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.white),)),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    )
                                   ],
                                 ),
                               ),
@@ -956,6 +1061,113 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
           : noInternet(context),
     );
   }
+
+  otpDialog(String? curSelected, String? otp, String? id, bool item, int index) async {
+    await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return StatefulBuilder(
+              builder: (BuildContext context, StateSetter setStater) {
+                print('___________${otp}_____fdffd_____');
+                return AlertDialog(
+                  contentPadding: const EdgeInsets.all(0.0),
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(5.0))),
+                  content: SingleChildScrollView(
+                      scrollDirection: Axis.vertical,
+                      child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                                padding:
+                                const EdgeInsets.fromLTRB(20.0, 20.0, 0, 2.0),
+                                child: Text(
+                                  "OTP Confirm",
+                                  style: Theme.of(this.context)
+                                      .textTheme
+                                      .subtitle1!
+                                      .copyWith(color: fontColor),
+                                )),
+                            const Divider(color: lightBlack),
+                            Form(
+                                key: _formkey,
+                                child: Column(
+                                  children: <Widget>[
+                                    Padding(
+                                        padding: const EdgeInsets.fromLTRB(
+                                            20.0, 0, 20.0, 0),
+                                        child: TextFormField(
+                                          keyboardType: TextInputType.number,
+                                          validator: (String? value) {
+                                            if (value!.isEmpty) {
+                                              return "This Field is Required";
+                                            } else if (value.trim() != otp) {
+                                              return 'Error validating OTP, try again';
+                                            } else {
+                                              return null;
+                                            }
+                                          },
+                                          autovalidateMode:
+                                          AutovalidateMode.onUserInteraction,
+                                          decoration: InputDecoration(
+                                            hintText: "Enter OTP",
+                                            hintStyle: Theme.of(this.context)
+                                                .textTheme
+                                                .subtitle1!
+                                                .copyWith(
+                                                color: lightBlack,
+                                                fontWeight: FontWeight.normal),
+                                          ),
+                                          controller: otpC,
+                                        )),
+                                  ],
+                                ))
+                          ])),
+                  actions: <Widget>[
+                    TextButton(
+                        child: Text(
+                          "Cancel",
+                          style: Theme.of(this.context)
+                              .textTheme
+                              .subtitle2!
+                              .copyWith(
+                              color: lightBlack, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          Navigator.pop(context);
+                        }),
+                    TextButton(
+                        child: Text(
+                          "Send",
+                          style: Theme.of(this.context)
+                              .textTheme
+                              .subtitle2!
+                              .copyWith(
+                              color: fontColor, fontWeight: FontWeight.bold),
+                        ),
+                        onPressed: () {
+                          final form = _formkey.currentState!;
+                          if (form.validate()) {
+                            form.save();
+                            setState(() {
+                              Navigator.pop(context);
+                            });
+                            updateOrder(
+                              widget.model!.itemList![0].curSelected,
+                              updateOrderItemApi,
+                              widget.model!.itemList![0].id,
+                              true,
+                              0,
+                            );
+                          }
+                        })
+                  ],
+                );
+              });
+        });
+  }
+
 
   Future<void> searchOperation(String searchText) async {
     searchList.clear();
@@ -1023,11 +1235,8 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: () {
-                          return searchList
-                              .asMap()
-                              .map(
-                                (index, element) => MapEntry(
-                                  index,
+                          return searchList.asMap().map(
+                                (index, element) => MapEntry(index,
                                   InkWell(
                                     onTap: () {
                                       Navigator.of(context).pop();
@@ -1054,9 +1263,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                     ),
                                   ),
                                 ),
-                              )
-                              .values
-                              .toList();
+                              ).values.toList();
                         }(),
                       ),
                     ),
@@ -1093,112 +1300,109 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
               ),
             ),
           ),
-        )
-        .values
-        .toList();
+        ).values.toList();
   }
 
-  otpDialog(String? curSelected, String? otp, String? id, bool item,
-      int index) async {
-    await showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return StatefulBuilder(
-          builder: (BuildContext context, StateSetter setStater) {
-            return AlertDialog(
-              contentPadding: const EdgeInsets.all(0.0),
-              shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.all(Radius.circular(5.0))),
-              content: SingleChildScrollView(
-                  scrollDirection: Axis.vertical,
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Padding(
-                            padding: EdgeInsets.fromLTRB(20.0, 20.0, 0, 2.0),
-                            child: Text(
-                              getTranslated(context, "OTP_LBL")!,
-                              style: Theme.of(this.context)
-                                  .textTheme
-                                  .subtitle1!
-                                  .copyWith(color: fontColor),
-                            )),
-                        Divider(color: lightBlack),
-                        Form(
-                            key: _formkey,
-                            child: new Column(
-                              children: <Widget>[
-                                Padding(
-                                    padding:
-                                        EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
-                                    child: TextFormField(
-                                      keyboardType: TextInputType.number,
-                                      validator: (String? value) {
-                                        if (value!.length == 0)
-                                          return getTranslated(
-                                              context, "FIELD_REQUIRED")!;
-                                        else if (value.trim() != otp)
-                                          return getTranslated(
-                                              context, "OTPERROR")!;
-                                        else
-                                          return null;
-                                      },
-                                      autovalidateMode:
-                                          AutovalidateMode.onUserInteraction,
-                                      decoration: InputDecoration(
-                                        hintText: getTranslated(
-                                            context, "OTP_ENTER")!,
-                                        hintStyle: Theme.of(this.context)
-                                            .textTheme
-                                            .subtitle1!
-                                            .copyWith(
-                                                color: lightBlack,
-                                                fontWeight: FontWeight.normal),
-                                      ),
-                                      controller: otpC,
-                                    )),
-                              ],
-                            ))
-                      ])),
-              actions: <Widget>[
-                new MaterialButton(
-                    child: Text(
-                      getTranslated(context, "CANCEL")!,
-                      style: Theme.of(this.context)
-                          .textTheme
-                          .subtitle2!
-                          .copyWith(
-                              color: lightBlack, fontWeight: FontWeight.bold),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                    }),
-                new MaterialButton(
-                  child: Text(
-                    getTranslated(context, "SEND_LBL")!,
-                    style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
-                        color: fontColor, fontWeight: FontWeight.bold),
-                  ),
-                  onPressed: () {
-                    final form = _formkey.currentState!;
-                    if (form.validate()) {
-                      form.save();
-                      setState(() {
-                        Navigator.pop(context);
-                      });
-                      updateOrder(
-                          curSelected, updateOrderItemApi, id, item, index);
-                    }
-                  },
-                ),
-              ],
-            );
-          },
-        );
-      },
-    );
-  }
+  // otpDialog(String? curSelected, String? otp, String? id, bool item, int index) async {
+  //   await showDialog(
+  //     context: context,
+  //     builder: (BuildContext context) {
+  //       return StatefulBuilder(
+  //         builder: (BuildContext context, StateSetter setStater) {
+  //           return AlertDialog(
+  //             contentPadding: const EdgeInsets.all(0.0),
+  //             shape: RoundedRectangleBorder(
+  //                 borderRadius: BorderRadius.all(Radius.circular(5.0))),
+  //             content: SingleChildScrollView(
+  //                 scrollDirection: Axis.vertical,
+  //                 child: Column(
+  //                     crossAxisAlignment: CrossAxisAlignment.start,
+  //                     mainAxisSize: MainAxisSize.min,
+  //                     children: [
+  //                       Padding(
+  //                           padding: EdgeInsets.fromLTRB(20.0, 20.0, 0, 2.0),
+  //                           child: Text(
+  //                             getTranslated(context, "OTP_LBL")!,
+  //                             style: Theme.of(this.context)
+  //                                 .textTheme
+  //                                 .subtitle1!
+  //                                 .copyWith(color: fontColor),
+  //                           )),
+  //                       Divider(color: lightBlack),
+  //                       Form(
+  //                           key: _formkey,
+  //                           child: new Column(
+  //                             children: <Widget>[
+  //                               Padding(
+  //                                   padding:
+  //                                       EdgeInsets.fromLTRB(20.0, 0, 20.0, 0),
+  //                                   child: TextFormField(
+  //                                     keyboardType: TextInputType.number,
+  //                                     validator: (String? value) {
+  //                                       if (value!.length == 0)
+  //                                         return getTranslated(
+  //                                             context, "FIELD_REQUIRED")!;
+  //                                       else if (value.trim() != otp)
+  //                                         return getTranslated(
+  //                                             context, "OTPERROR")!;
+  //                                       else
+  //                                         return null;
+  //                                     },
+  //                                     autovalidateMode:
+  //                                         AutovalidateMode.onUserInteraction,
+  //                                     decoration: InputDecoration(
+  //                                       hintText: getTranslated(
+  //                                           context, "OTP_ENTER")!,
+  //                                       hintStyle: Theme.of(this.context)
+  //                                           .textTheme
+  //                                           .subtitle1!
+  //                                           .copyWith(
+  //                                               color: lightBlack,
+  //                                               fontWeight: FontWeight.normal),
+  //                                     ),
+  //                                     controller: otpC,
+  //                                   )),
+  //                             ],
+  //                           ))
+  //                     ])),
+  //             actions: <Widget>[
+  //               new MaterialButton(
+  //                   child: Text(
+  //                     getTranslated(context, "CANCEL")!,
+  //                     style: Theme.of(this.context)
+  //                         .textTheme
+  //                         .subtitle2!
+  //                         .copyWith(
+  //                             color: lightBlack, fontWeight: FontWeight.bold),
+  //                   ),
+  //                   onPressed: () {
+  //                     Navigator.pop(context);
+  //                   }),
+  //               new MaterialButton(
+  //                 child: Text(
+  //                   getTranslated(context, "SEND_LBL")!,
+  //                   style: Theme.of(this.context).textTheme.subtitle2!.copyWith(
+  //                       color: fontColor, fontWeight: FontWeight.bold),
+  //                 ),
+  //                 onPressed: () {
+  //                   final form = _formkey.currentState!;
+  //                   if (form.validate()) {
+  //                     form.save();
+  //                     setState(() {
+  //                       Navigator.pop(context);
+  //                     });
+  //                     updateOrder(
+  //                         curSelected, updateOrderItemApi, id, item, index);
+  //                   }
+  //                 },
+  //               ),
+  //             ],
+  //           );
+  //         },
+  //       );
+  //     },
+  //   );
+  // }
 
   _launchMap(lat, lng) async {
     var url = '';
@@ -1210,7 +1414,6 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
       url =
           "http://maps.apple.com/?saddr=&daddr=$lat,$lng&directionsmode=driving&dir_action=navigate";
     }
-
     await launch(url);
     // if (await canLaunch(url)) {
     //   await launch(url);
@@ -1945,17 +2148,14 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
       if (_isNetworkAvail) {
         try {
           var parameter = {
-            STATUS: status,
+            STATUS: status == "processed" ? "food prepared": status,
           };
           if (item) {
             parameter[ORDERITEMID] = finalIds;
           }
           if (selectedDelBoy != null)
             parameter[DEL_BOY_ID] = searchList[selectedDelBoy!].id;
-            print("parameter and api " +
-              parameter.toString() +
-              "$updateOrderItemApi");
-
+            print("parameter and api " + parameter.toString() + "$updateOrderItemApi");
           apiBaseHelper.postAPICall(updateOrderItemApi, parameter).then(
             (getdata) async {
               bool error = getdata["error"];

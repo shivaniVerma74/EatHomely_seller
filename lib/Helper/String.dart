@@ -109,7 +109,7 @@ String LIMIT = "limit";
 
 const String SHIPED = 'shipped';
 const String PROCESSED = 'processed';
-const String READYFORPICKUP = 'Ready For Pickup';
+const String READYFORPICKUP = 'food ready for pickup';
 const String PAYMENTCOMPLETE = 'Payment Complete';
 const String DELIVERD = 'delivered';
 const String CANCLED = 'cancelled';
