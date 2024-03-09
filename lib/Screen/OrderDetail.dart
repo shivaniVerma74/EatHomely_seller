@@ -57,15 +57,14 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
     // RETURNED,
   ];
 
-
   List<String> statusList2 = [
     // PROCESSED,
     READYFORPICKUP,
-    PAYMENTCOMPLETE,
     // PLACED,
     // PROCESSED,
     // SHIPED,
     DELIVERD,
+    PAYMENTCOMPLETE,
     // CANCLED,
     // RETURNED,
   ];
@@ -98,6 +97,29 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
       print("${widget.model!.itemList![i].status}"+"((((((((((((((((((((((((((");
     }
     Future.delayed(Duration.zero, this.getOrderDetail);
+
+    if(widget.model!.itemList![0].status=="processed"){
+      statusList2.clear();
+      statusList2.add(READYFORPICKUP);
+      //statusList2.add(PAYMENTCOMPLETE);
+    }
+
+    if(widget.model!.itemList![0].status=="food ready for pickup"){
+      statusList2.clear();
+      statusList2.add(DELIVERD);
+      //statusList2.add(PAYMENTCOMPLETE);
+    }
+    print("-------- ----------- ${widget.model!.itemList![0]}");
+    if(widget.model!.itemList![0].status==PAYMENTCOMPLETE){
+      statusList2.clear();
+     //  statusList2.add(DELIVERD);
+     //   statusList2.add(PAYMENTCOMPLETE);
+    }
+    if(widget.model!.itemList![0].status==DELIVERD){
+      statusList2.clear();
+    //    statusList2.add(DELIVERD);
+       statusList2.add(PAYMENTCOMPLETE);
+    }
 
     super.initState();
 
@@ -277,18 +299,18 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
           },
         );
     }
-
     return null;
   }
 
   double totalTax = 0;
 
   getTotalTax() {
-    if (model!.itemList![0].cgst == "" || model!.itemList![0].cgst == null) {
+    print("total gstttsts ${model!.igst}");
+    if (model!.igst == "" || model!.igst == null) {
       totalTax = 0.0;
     } else {
-      totalTax = double.parse(model!.itemList![0].cgst.toString()) +
-          double.parse(model!.itemList![0].sgst.toString());
+      totalTax = double.parse(model!.igst.toString()) +
+          double.parse(model!.igst.toString());
     }
   }
 
@@ -319,7 +341,6 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
               btnCntrl: buttonController,
               onBtnSelected: () async {
                 _playAnimation();
-
                 Future.delayed(Duration(seconds: 2)).then(
                   (_) async {
                     _isNetworkAvail = await isNetworkAvailable();
@@ -557,10 +578,18 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                 ),
                                                 Text(
                                                   model!.urgentDelivery!,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .subtitle2!
-                                                      .copyWith(color: black),
+                                                  style: Theme.of(context).textTheme.subtitle2!.copyWith(color: black),
+                                                ),
+                                              ],
+                                            ),
+                                            Row(
+                                              children: [
+                                                Text("Schedule Delivery Date -",
+                                                  style: Theme.of(context).textTheme.subtitle2!.copyWith(color: grey),
+                                                ),
+                                                Text(
+                                                  model!.deliveryDate!,
+                                                  style: Theme.of(context).textTheme.subtitle2!.copyWith(color: black),
                                                 ),
                                               ],
                                             ),
@@ -608,8 +637,8 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                           // SizedBox(
                                           //   height: 5,
                                           // ),
-                                          widget.model!.itemList![0].status != DELIVERD
-                                              ? Padding(
+                                          widget.model!.itemList![0].status != 'food prepared' ?
+                                          Padding(
                                                   padding: const EdgeInsets.symmetric(vertical: 10.0),
                                                   child: Row(
                                                     children: [
@@ -739,9 +768,9 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                       RawMaterialButton(
                                                         constraints: const BoxConstraints.expand(width: 42, height: 42),
                                                         onPressed: () {
-                                                          if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
-                                                            Fluttertoast.showToast(msg: 'choose different status');
-                                                          } else {
+                                                          print("firsttsst${widget.model!.itemList![0].curSelected}===========");
+                                                          print("second${widget.model!.itemList![0].status}===========");
+                                                          // if(widget.model!.itemList![0].status?.toLowerCase()=="food ready for pickup"){
                                                             updateOrder(
                                                               widget.model!.itemList![0].curSelected,
                                                               updateOrderItemApi,
@@ -749,7 +778,20 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                               true,
                                                               0,
                                                             );
-                                                          }
+                                                          // }else{
+                                                          //   Fluttertoast.showToast(msg: 'Status Already Update');
+                                                          // }
+                                                          // if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
+                                                          //   Fluttertoast.showToast(msg: 'choose different status');
+                                                          // } else {
+                                                          //   updateOrder(
+                                                          //     widget.model!.itemList![0].curSelected,
+                                                          //     updateOrderItemApi,
+                                                          //     widget.model!.itemList![0].id,
+                                                          //     true,
+                                                          //     0,
+                                                          //   );
+                                                          // }
                                                           // if (widget.model!.itemList![0].item_otp != null &&
                                                           //     widget.model!.itemList![0].item_otp!.isNotEmpty &&
                                                           //     widget.model!.itemList![0].item_otp != "0" &&
@@ -764,7 +806,6 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                           //       model.id, true, 0,
                                                           //       widget.model!.itemList![0].item_otp);
                                                           // }
-
                                                         },
                                                         elevation: 2.0,
                                                         fillColor: fontColor,
@@ -783,11 +824,11 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                   ),
                                                 )
                                               : Container(
-                                            width: MediaQuery.of(context).size.width/1,
+                                               width: MediaQuery.of(context).size.width/1,
                                                 child: Padding(
                                                   padding: const EdgeInsets.all(10.0),
                                                   child: Text(
-                                                      "DELIVERED",
+                                                      "Food Ready For Pickup",
                                                       style: TextStyle(
                                                           color: primary),
                                                     ),
@@ -810,7 +851,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             // SizedBox(
                                             //   height: 5,
                                             // ),
-                                            widget.model!.itemList![0].status != DELIVERD ?
+                                            widget.model!.itemList![0].status != 'Payment Complete' ?
                                             Padding(
                                                  padding: const EdgeInsets.symmetric(vertical: 10.0),
                                                  child: Row(
@@ -885,10 +926,12 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                          otpDialog(
                                                              widget.model!.itemList![0].curSelected,
                                                              widget.model!.otp, widget.model!.itemList![0].id, true, 0);
-                                                       } else {
-                                                         if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
-                                                           Fluttertoast.showToast(msg: 'choose different status');
-                                                         } else {
+                                                       }
+                                                       // else {
+                                                       //   if(widget.model!.itemList![0].curSelected?.toLowerCase() == widget.model!.itemList![0].status?.toLowerCase()) {
+                                                       //     Fluttertoast.showToast(msg: 'choose different status');
+                                                       //   }
+                                                         else {
                                                            updateOrder(
                                                              widget.model!.itemList![0].curSelected,
                                                              updateOrderItemApi,
@@ -897,7 +940,7 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                              0,
                                                            );
                                                          }
-                                                       }
+                                                       // }
                                                      },
                                                      elevation: 2.0,
                                                      fillColor: fontColor,
@@ -914,13 +957,12 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                                    ),
                                                 ],
                                               ),
-                                            )
-                                                : Container(
+                                            ): Container(
                                               width: MediaQuery.of(context).size.width/1,
                                                   child: Padding(
                                                     padding: const EdgeInsets.all(10.0),
                                                     child: Text(
-                                              "DELIVERED",
+                                              "Payment Complete",
                                               style: TextStyle(
                                                       color: primary),
                                                     ),
@@ -943,14 +985,11 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                                             orderItem, model!, i);
                                       },
                                     ),
-
                                     // Add-on item section
-
                                     model!.addonList?.isEmpty ?? true
                                         ? SizedBox()
                                         : Container(
-                                            decoration: BoxDecoration(
-                                                color: Colors.white),
+                                            decoration: BoxDecoration(color: Colors.white),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.start,
@@ -1479,10 +1518,9 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                             .textTheme
                             .button!
                             .copyWith(color: lightBlack2))
-                  ],
+                    ],
+                  ),
                 ),
-              ),
-
               // Padding(
               //   padding: EdgeInsets.only(left: 15.0, right: 15.0),
               //   child: Row(
@@ -1507,8 +1545,25 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
               //     ],
               //   ),
               // ),
-
-              Padding(
+                  Padding(
+                    padding: EdgeInsets.only(left: 15.0, right: 15.0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text("Packaging Charge",
+                            style: Theme.of(context)
+                                .textTheme
+                                .button!
+                                .copyWith(color: lightBlack2),),
+                        Text("+ " + CUR_CURRENCY + " " + tempList[0].totalPackingCharge!,
+                            style: Theme.of(context)
+                                .textTheme
+                                .button!
+                                .copyWith(color: lightBlack2))
+                      ],
+                    ),
+                  ),
+               Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -1571,7 +1626,6 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
               //     ],
               //   ),
               // ),
-
               Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0),
                 child: Row(
@@ -1585,15 +1639,14 @@ class StateOrder extends State<OrderDetail> with TickerProviderStateMixin {
                     Text(
                         CUR_CURRENCY +
                             " " +
-                            "${double.parse(totalTax.toString()).toStringAsFixed(2)}",
+                            "${double.parse(model!.igst.toString()).toStringAsFixed(2)}",
                         style: Theme.of(context)
                             .textTheme
                             .button!
                             .copyWith(color: lightBlack2))
-                  ],
-                ),
-              ),
-
+                     ],
+                  ),
+               ),
               ///
               Padding(
                 padding: EdgeInsets.only(left: 15.0, right: 15.0),

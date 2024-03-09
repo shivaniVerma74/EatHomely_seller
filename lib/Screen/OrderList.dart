@@ -843,19 +843,21 @@ class _OrderListState extends State<OrderList> with TickerProviderStateMixin {
                                 ),
                               ),
                             ),
-                            child: model.itemList![0].activeStatus ==
-                                    "processed"
-                                ? Text(
-                                    "food prepared",
-                                    style: TextStyle(color: white),
-                                  )
-                                : model.itemList![0].activeStatus == "shipped"
+                            child:
+                            // model.itemList![0].activeStatus ==
+                            //         "processed"
+                            //     ? Text(
+                            //         "food prepared",
+                            //         style: TextStyle(color: white),
+                            //       )
+                            //     :
+                            model.itemList![0].activeStatus == "shipped"
                                     ? Text(
                                         "Picked Up",
                                         style: TextStyle(color: white),
                                       )
                                     : model.itemList![0].activeStatus ==
-                                            "food prepared"
+                                            "processed"
                                         ? Text(
                                             "order accepted",
                                             style: TextStyle(color: white),

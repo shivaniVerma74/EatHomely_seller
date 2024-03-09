@@ -23,6 +23,8 @@ class Order_Model {
       orderDate,
       orderTime,
       dateTime,
+      igst,
+      totalPackingCharge,
       isCancleable,
       deliveryType,
       isReturnable,
@@ -41,6 +43,7 @@ class Order_Model {
       driverMobile,
       cgst,
       sgst,
+      deliveryDate,
       deliverTime;
   List<AddOnModel>? addonList = [];
   List<Attachment>? attachList = [];
@@ -64,6 +67,9 @@ class Order_Model {
       this.addonList,
       this.taxPer,
       this.taxAmt,
+        this.igst,
+        this.deliveryDate,
+        this.totalPackingCharge,
       this.orderDate,
       this.dateTime,
       this.itemList,
@@ -133,6 +139,9 @@ class Order_Model {
       payable: parsedJson[TotalPayable],
       addonList: addList,
       address: parsedJson[Address],
+      totalPackingCharge: parsedJson['total_packing_charge'],
+      igst: parsedJson['igst'],
+        deliveryDate : parsedJson['delivery_date'],
       taxAmt: parsedJson[TotalTaxAmount],
       taxPer: parsedJson[TotalTaxPercent],
         paymentStatus: parsedJson['payment_status'],

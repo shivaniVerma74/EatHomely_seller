@@ -193,18 +193,12 @@ class _AddAttributeBottomSheetState extends State<AddAttributeBottomSheet> {
                   controller: textEditingController,
                   onChanged: (value) {
                     if (value.trim().isNotEmpty) {
-                      final suggestions = widget.attributes
-                          .where((element) => element.value!
-                              .toLowerCase()
-                              .contains(value.trim().toLowerCase()))
-                          .toList();
-
+                      final suggestions = widget.attributes.where((element) => element.value!.toLowerCase().contains(value.trim().toLowerCase())).toList();
                       suggestedAttribute.clear();
                       suggestedAttribute.addAll(suggestions);
                       if (!showSuggestedAttributes) {
                         showSuggestedAttributes = true;
                       }
-
                       setState(() {});
                     } else {
                       //
